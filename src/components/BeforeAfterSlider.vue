@@ -1,20 +1,31 @@
 <template>
-  <div
+  <div 
     :style="{
-      width: '1050px',
-      height: '650px',
-      background: getBackgroundUrl(after),
+      maxWidth: containerWidth,
     }"
-    class="bottom-layer"
+    class="before-after-slider"
   >
     <div
-      :style="{
-        width: sliderValue + '%',
-        height: '100%',
-        background: getBackgroundUrl(before),
-      }"
-      class="top-layer"
-    />
+      class="before-after-slider__layer --bottom"
+    >
+      <img
+        ref="bottom-img"
+        :src="after"
+        class="before-after-slider__image --bottom"
+        @load="resize"
+      >
+      <div
+        :style="{
+          width: sliderValue + '%',
+        }"
+        class="before-after-slider__layer --top"
+      >
+        <img
+          :src="before"
+          class="before-after-slider__image --top"
+        >
+      </div>
+    </div>
     <range-slider
       class="slider"
       min="0"
@@ -48,35 +59,70 @@ export default {
 
   data () {
     return {
-      sliderValue: 60
+      sliderValue: 60,
+      containerWidth: '100%',
     }
   },
 
   methods: {
-    getBackgroundUrl( src ) {
-      return `url('${src}')`;
-    },
+   resize() {
+      this.containerWidth = this.$refs['bottom-img'].clientWidth + 'px';
+   }
   },
 };
 </script>
 
-<style>
+<style lang="less">
 .slider {
   width: 100%;
   padding: 0;
   position: absolute;
   bottom: calc(50% - 10px);
-}
 
-.slider .range-slider-rail, .slider .range-slider-fill {
+  .range-slider-rail {
     opacity: 0;
+  }
+
+  .range-slider-fill {
+    opacity: 0;
+  }
 }
 
-.bottom-layer {
+.before-after-slider {
   position: relative;
-}
 
-.top-layer {
-  border-right: 2px solid #ddd;
+  &__layer {
+    height: 100%;
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+
+    background: #ccc;
+
+    &.--bottom {
+      position: relative;
+    }
+
+    &.--top {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+
+      border-right: 2px solid #ddd;
+    }
+  }
+
+  &__image {
+    &.--top {
+      max-height: 100%;
+    }
+
+    &.--bottom {
+      max-width: 100%;
+    }
+  }
 }
 </style>
